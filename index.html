@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SUMM Ingredients — LinkedIn Content Framework</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: #FAF6EE; color: #2C1810; }
+.app { min-height: 100vh; background: #FAF6EE; }
+.header { background: #B5922A; padding: 22px 48px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; border-bottom: 3px solid #8A6E1A; }
+.header-brand { display: flex; align-items: baseline; gap: 10px; }
+.header-summ { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 30px; color: #F5EDD8; letter-spacing: -1px; }
+.header-sub { font-family: 'DM Sans', sans-serif; font-weight: 300; font-size: 12px; color: #F5EDD8; opacity: 0.8; letter-spacing: 2px; text-transform: uppercase; }
+.header-title { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; color: #F5EDD8; letter-spacing: 3px; text-transform: uppercase; opacity: 0.85; }
+.nav { background: #5C1A1A; padding: 0 48px; display: flex; gap: 0; overflow-x: auto; }
+.nav-tab { padding: 14px 22px; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #F5EDD8; opacity: 0.5; cursor: pointer; border: none; background: none; border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap; }
+.nav-tab:hover { opacity: 0.8; }
+.nav-tab.active { opacity: 1; border-bottom: 3px solid #B5922A; }
+.main { max-width: 1280px; margin: 0 auto; padding: 48px; }
+.section-header { margin-bottom: 40px; }
+.section-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: #B5922A; margin-bottom: 10px; }
+.section-title { font-family: 'Playfair Display', serif; font-size: 40px; font-weight: 900; color: #5C1A1A; line-height: 1.1; margin-bottom: 14px; }
+.section-desc { font-size: 15px; font-weight: 300; color: #2C1810; opacity: 0.75; max-width: 640px; line-height: 1.6; }
+.card { background: white; border: 1px solid rgba(181,146,42,0.2); border-radius: 4px; padding: 28px; transition: box-shadow 0.2s; }
+.card:hover { box-shadow: 0 4px 24px rgba(92,26,26,0.08); }
+.card-gold { background: #B5922A; border-color: #8A6E1A; }
+.card-maroon { background: #5C1A1A; border-color: #5C1A1A; }
+.card-cream { background: #F5EDD8; border-color: rgba(181,146,42,0.3); }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 20px; }
+.tag { display: inline-block; padding: 4px 12px; border-radius: 2px; font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; }
+.tag-gold { background: #B5922A; color: #F5EDD8; }
+.tag-maroon { background: #5C1A1A; color: #F5EDD8; }
+.tag-cream { background: #F5EDD8; color: #5C1A1A; border: 1px solid rgba(181,146,42,0.4); }
+.tag-outline { border: 1.5px solid #B5922A; color: #B5922A; background: transparent; }
+.li-post { background: white; border: 1px solid #e0d8c8; border-radius: 8px; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 540px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+.li-post-header { padding: 16px 16px 0; display: flex; align-items: center; gap: 12px; }
+.li-avatar { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; flex-shrink: 0; color: #F5EDD8; }
+.li-name { font-size: 14px; font-weight: 600; color: #1a1a1a; line-height: 1.3; }
+.li-role { font-size: 12px; color: #666; line-height: 1.3; }
+.li-time { font-size: 12px; color: #888; margin-top: 2px; }
+.li-body { padding: 12px 16px 16px; font-size: 14px; color: #1a1a1a; line-height: 1.55; white-space: pre-line; }
+.li-image { width: 100%; background: #B5922A; padding: 32px 24px; color: #F5EDD8; text-align: center; font-size: 20px; font-weight: 800; font-family: 'Playfair Display', serif; line-height: 1.3; }
+.li-reactions { padding: 8px 16px; border-top: 1px solid #f0ede8; display: flex; gap: 12px; }
+.li-react-btn { font-size: 13px; color: #666; font-weight: 500; cursor: pointer; padding: 4px 8px; border-radius: 4px; border: none; background: none; font-family: inherit; }
+.li-react-btn:hover { background: #f3f2ef; }
+.see-more { color: #0a66c2; cursor: pointer; font-weight: 600; display: block; margin-top: 4px; font-family: inherit; background: none; border: none; padding: 0; font-size: 14px; }
+.pill-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+.pill { padding: 8px 18px; border-radius: 100px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid rgba(181,146,42,0.4); color: #8A6E1A; background: white; transition: all 0.15s; letter-spacing: 0.5px; font-family: 'DM Sans', sans-serif; }
+.pill:hover { border-color: #B5922A; color: #B5922A; }
+.pill.active { background: #B5922A; color: #F5EDD8; border-color: #B5922A; }
+.divider { height: 1px; background: rgba(181,146,42,0.2); margin: 32px 0; }
+.divider-gold { height: 3px; background: #B5922A; width: 48px; margin: 12px 0 24px; }
+.voice-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.voice-label { font-size: 12px; font-weight: 600; color: #5C1A1A; width: 110px; flex-shrink: 0; }
+.voice-track { flex: 1; height: 6px; background: rgba(181,146,42,0.15); border-radius: 3px; overflow: hidden; }
+.voice-fill { height: 100%; background: #B5922A; border-radius: 3px; }
+.voice-vs { font-size: 11px; color: #888; width: 90px; text-align: right; flex-shrink: 0; }
+.cal-grid { display: grid; grid-template-columns: 70px repeat(5, 1fr); gap: 1px; background: rgba(181,146,42,0.15); border-radius: 4px; overflow: hidden; margin-bottom: 16px; }
+.cal-cell { background: white; padding: 12px; min-height: 75px; }
+.cal-day-header { background: #5C1A1A; color: #F5EDD8; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 10px 6px; text-align: center; }
+.cal-week-label { background: #B5922A; color: #F5EDD8; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; writing-mode: vertical-rl; padding: 8px; }
+.cal-item { background: #F5EDD8; border-left: 3px solid #B5922A; padding: 5px 7px; border-radius: 0 3px 3px 0; font-size: 10px; line-height: 1.4; margin-bottom: 4px; }
+.cal-item.maroon { border-left-color: #5C1A1A; background: rgba(92,26,26,0.06); }
+.cal-item.dark { border-left-color: #8A6E1A; }
+.cal-empty { color: #ccc; font-size: 11px; display: flex; align-items: center; justify-content: center; height: 100%; }
+.copy-btn { padding: 8px 16px; background: #5C1A1A; color: #F5EDD8; border: none; border-radius: 3px; font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.15s; font-family: 'DM Sans', sans-serif; }
+.copy-btn:hover { background: #B5922A; }
+.copy-btn.copied { background: #2D7D46; }
+.formula { background: #5C1A1A; border-radius: 4px; padding: 20px 24px; font-family: 'DM Mono', monospace; color: #F5EDD8; font-size: 12px; line-height: 1.8; overflow-x: auto; }
+.formula-var { color: #D4AE5A; font-weight: 500; }
+.stat-box { text-align: center; padding: 24px; }
+.stat-num { font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 900; line-height: 1; margin-bottom: 8px; }
+.stat-label { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #5C1A1A; }
+.stat-sub { font-size: 12px; color: #888; margin-top: 4px; }
+.persona-badge { display: inline-flex; align-items: center; gap: 8px; padding: 5px 11px; border-radius: 100px; background: rgba(181,146,42,0.1); border: 1px solid rgba(181,146,42,0.3); font-size: 12px; font-weight: 500; color: #8A6E1A; margin-right: 6px; margin-bottom: 6px; }
+.accordion-item { border: 1px solid rgba(181,146,42,0.2); border-radius: 4px; overflow: hidden; margin-bottom: 8px; }
+.accordion-header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: white; transition: background 0.15s; border: none; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif; }
+.accordion-header:hover, .accordion-header.open { background: #F5EDD8; }
+.accordion-title { font-size: 14px; font-weight: 600; color: #5C1A1A; }
+.accordion-body { padding: 0 20px 20px; background: #F5EDD8; font-size: 13.5px; color: #2C1810; line-height: 1.65; }
+.highlight { background: rgba(181,146,42,0.12); border-left: 3px solid #B5922A; padding: 14px 18px; border-radius: 0 4px 4px 0; font-size: 14px; color: #2C1810; line-height: 1.6; margin: 12px 0; }
+.highlight strong { color: #5C1A1A; }
+@media (max-width: 900px) {
+  .main { padding: 20px; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .header { padding: 14px 20px; }
+  .nav { padding: 0 16px; }
+  .header-title { display: none; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState } = React;
+
+// ── DATA ─────────────────────────────────────────────────────────────────────
+
+const PILLARS = [
+  { id:"science", emoji:"🔬", label:"The Science", title:"The Science of Cross-Fermentation",
+    desc:"Own the intellectual high ground. Educate without intimidating. Make fermentation fascinating.",
+    frequency:"2x/month", formats:["Long-form article","Process visual","Q&A thread"], authors:["Chuchu","Nabila"],
+    color:"#5C1A1A", why:"Very few ingredient companies explain their process accessibly. This is a trust-builder and a moat." },
+  { id:"application", emoji:"🍽️", label:"Applications", title:"FermiPro in the Wild",
+    desc:"Show, don't sell. Real food. Real results. The sensory proof that FermiPro works.",
+    frequency:"1x/week", formats:["Before/after","Video tasting","Recipe breakdown"], authors:["Frederik","Nabila"],
+    color:"#B5922A", why:"R&D buyers are skeptical until they can taste it. This bridges from interest to sample request." },
+  { id:"trends", emoji:"📈", label:"Industry Insight", title:"Where Food is Going",
+    desc:"Salt reduction, protein quality, clean label regulation — be the smartest voice in the room.",
+    frequency:"1x/week", formats:["Trend take","Data commentary","News reaction"], authors:["Frederik","Kasper"],
+    color:"#8A6E1A", why:"This earns follows from people who aren't ready to buy yet. It builds the top of funnel." },
+  { id:"team", emoji:"👥", label:"Human Stories", title:"The People Behind SUMM",
+    desc:"B2B is built on trust. Real people, real curiosity, real backgrounds — not corporate voice.",
+    frequency:"2x/month", formats:["Personal post","Origin story","Behind the scenes"], authors:["Frederik","Kasper","Chuchu","Nabila"],
+    color:"#5C1A1A", why:"The SUMM team is genuinely interesting. This differentiates from faceless competitor brands." },
+  { id:"proof", emoji:"✅", label:"Proof Points", title:"Evidence That FermiPro Delivers",
+    desc:"Data, functional results, side-by-side comparisons. The technical reassurance buyers need.",
+    frequency:"2x/month", formats:["Stat carousel","Comparison post","Technical explainer"], authors:["Chuchu","Kasper"],
+    color:"#B5922A", why:"Procurement and R&D need evidence. This moves people from curious to convinced." }
+];
+
+const POSTS = [
+  { id:"story1", pillar:"team", author:"Frederik Østergaard Jensen", role:"CEO & Founder, SUMM Ingredients",
+    avatarBg:"#5C1A1A", avatarInit:"FJ", persona:"All", format:"Personal Story", hook:"Origin Story",
+    text:`My daughter is 4. She eats everything.
+
+Not because I forced it — because the food we make at home actually tastes good. Full stop.
+
+But I spent 15 years developing products for Fortune 500 companies, and I kept running into the same wall:
+
+The moment you try to make food "better for you," it stops tasting good.
+
+Remove the salt → it tastes flat.
+Add protein → it gets chalky.
+Go clean label → the texture falls apart.
+
+Every win somewhere came at a cost somewhere else.
+
+That's what SUMM is trying to fix.
+
+Not by finding a clever additive that masks the problems.
+By using fermentation to make the base ingredient do more.
+
+FermiPro started as a question: what if faba beans, fermented properly, could deliver umami, creaminess, AND nutrition — without any of the usual trade-offs?
+
+Turns out: they can.
+
+Three words on the label. Ten effects in the product.
+
+We're just getting started. But my daughter has better snacks now. That counts.
+
+—
+
+I'd love to know: what's the hardest formulation trade-off you've faced?`,
+    imageText:"Do SUMM good.", tags:["Origin Story","Founder","Clean Label"],
+    analysis:"Starts with a relatable human moment. Builds to the business insight. Never pitches — leads with the problem. Ends with an invitation.",
+    when:"First month of new LinkedIn presence. Sets the foundation and gets followers for future technical content." },
+
+  { id:"science1", pillar:"science", author:"Chuchu Huang", role:"CTO & Co-Founder, SUMM Ingredients",
+    avatarBg:"#8A6E1A", avatarInit:"CH", persona:"R&D / Technical", format:"Educational Thread", hook:"Technical Insight",
+    text:`Most people think fermentation = adding a probiotic and calling it a day.
+
+Cross-fermentation is something different. Let me explain.
+
+When we process FermiPro, we don't use a single microbial strain.
+
+We use a precise, sequential set of microorganisms — each one working in a modified environment created by the one before it.
+
+The byproducts of Step 1 become the substrate of Step 2.
+The pH shift from Step 2 enables reactions in Step 3.
+
+Each stage builds on what came before.
+
+The result?
+
+→ Peptide chains that deliver kokumi richness
+→ Glutamic acid expression for genuine umami — not the shortcut kind
+→ Modified protein structure for high solubility and emulsification
+→ Improved bioavailability — the nutrition actually reaches you
+
+You cannot get this from a single-step fermentation. The layering is the point.
+
+We call it cross-fermentation. Think of it as orchestrated transformation rather than a single reaction.
+
+It's why FermiPro does what it does.
+And why one ingredient can replace four.
+
+Nerdy questions welcome below 👇`,
+    imageText:"Cross-fermentation:\nOrchestrated transformation", tags:["Science","Fermentation","Technical"],
+    analysis:"Opens with a misconception to correct. Uses a step-by-step reveal that makes complex science feel logical. Earns credibility before mentioning FermiPro.",
+    when:"After building some following from application or founder posts. Rewards early followers with depth." },
+
+  { id:"app1", pillar:"application", author:"Nabila Rodríguez Valerón", role:"Head of Flavor Fermentation, SUMM",
+    avatarBg:"#B5922A", avatarInit:"NR", persona:"R&D / Innovation", format:"Before/After", hook:"Taste Test",
+    text:`I asked 12 food scientists to try two versions of the same tomato sauce.
+
+Version A: Standard formulation. Bouillon, flavor additives, starch for body.
+Version B: FermiPro at 3%. Nothing else changed.
+
+Blind test. No context given.
+
+Results:
+
+→ 11/12 preferred Version B on depth of flavor
+→ 10/12 said B had "better mouthfeel"
+→ 8/12 guessed B had dairy in it (it didn't)
+→ 3 people asked if B had been "slow-cooked longer"
+
+It hadn't. Same process. One ingredient difference.
+
+Here's what's happening chemically:
+
+FermiPro's fermentation-derived peptides trigger the kokumi receptors. These aren't about taste exactly — they're about continuity, richness, fullness. The sensation of "something has been cooking for hours."
+
+You don't need more hours. You need the right biochemistry.
+
+The label for Version B?
+"Tomato, onion, garlic, olive oil, fermented faba bean protein, sea salt."
+
+That's it.
+
+The future of clean-label food doesn't taste like a compromise.
+
+DM me if you want to run your own tasting.`,
+    imageText:"Version B.\nSame process.\nDifferent world.", tags:["Application","Tasting","Science"],
+    analysis:"Uses real tasting data with specific numbers. The label reveal at the end is the payoff — clean label as a surprise, not a boast.",
+    when:"Anytime. Great for pre-trade-show awareness or when targeting snack/sauce manufacturers." },
+
+  { id:"trend1", pillar:"trends", author:"Kasper Bus", role:"CCO, SUMM Ingredients",
+    avatarBg:"#5C1A1A", avatarInit:"KB", persona:"Innovation / Procurement", format:"Industry Take", hook:"Trend Commentary",
+    text:`The EU's proposed updates to "natural flavoring" definitions are going to reshape a lot of formulas.
+
+Here's what that means practically:
+
+Right now, a lot of "clean label" products are clean-looking but not clean in any meaningful sense. The labels are short because certain complex additives can hide behind umbrella terms.
+
+That window is closing.
+
+For food manufacturers, this means two things:
+
+1. Reformulation is coming whether you plan for it or not.
+2. The companies that get ahead of it now will have a competitive edge.
+
+What's the alternative to complex additive stacks?
+
+Ingredients that do multiple jobs by nature — not by chemical modification.
+
+Fermentation-derived ingredients are particularly well-positioned here because:
+→ The "work" is done by biology, not chemistry
+→ The label reads as recognizable whole foods
+→ The function is intrinsic to the ingredient, not added
+
+We're not predicting the future here. We're watching the regulation and building accordingly.
+
+What categories do you think will feel this most?`,
+    imageText:null, tags:["Regulation","Clean Label","EU","Industry"],
+    analysis:"No product mention. Pure insight and positioning. Builds top-of-funnel follows from people not yet ready to buy.",
+    when:"When a regulatory update, news story, or industry report gives you a hook to react to." },
+
+  { id:"proof1", pillar:"proof", author:"Chuchu Huang", role:"CTO & Co-Founder, SUMM Ingredients",
+    avatarBg:"#8A6E1A", avatarInit:"CH", persona:"R&D / Technical", format:"Data Post", hook:"Proof Point",
+    text:`We ran FermiPro head-to-head against a standard yeast extract + sodium glutamate combination in a snack seasoning.
+
+Same target flavor profile. Same processing conditions. Same application rate.
+
+Results (sensory panel, n=24, double-blind):
+
+Umami intensity: FermiPro 7.8/10 vs control 7.2/10 ✓
+Kokumi / lingering richness: FermiPro 8.1/10 vs control 5.4/10 ✓✓
+Off-note / metallic finish: FermiPro 1.1/10 vs control 3.8/10 ✓✓✓
+Sodium content: FermiPro 40% lower ✓✓✓
+
+Label count: FermiPro = 1 ingredient. Control = 3 ingredients.
+
+The part I find most interesting is the kokumi score.
+
+Yeast extracts deliver glutamates well. But they don't deliver the kokumi effect — that persistent, full, rich sensation that makes food craveable in a way that's hard to explain.
+
+That's where fermentation-derived peptides earn their place.
+
+If your snack or seasoning team is battling the "good initial hit but no finish" problem — this is what's missing.
+
+Raw data available on request.`,
+    imageText:"40% less sodium.\nSame craveability.\nOne ingredient.", tags:["Data","Snacks","Proof","Technical"],
+    analysis:"Data-forward but humanized. Explains the interesting finding, not just the numbers. Ends with a clear CTA for the right buyer.",
+    when:"When targeting snack/seasonings R&D teams. Pair with a sample kit outreach campaign." },
+
+  { id:"human1", pillar:"team", author:"Frederik Østergaard Jensen", role:"CEO & Founder, SUMM Ingredients",
+    avatarBg:"#5C1A1A", avatarInit:"FJ", persona:"All", format:"Honest Take", hook:"Counterintuitive POV",
+    text:`Hot take: the ingredient industry is partly responsible for the UPF problem.
+
+Not because manufacturers are evil.
+Because the system rewarded specialization.
+
+You want umami? Here's an extract for that.
+You want texture? Here's a gum for that.
+You want shelf life? Here's a stabilizer for that.
+
+Each one solved one problem. Together, they created a new one: a 25-ingredient list that no consumer trusts.
+
+The answer isn't to demonize the ingredients that got us here. A lot of them were genuine innovations solving real problems.
+
+The answer is to ask a different question.
+
+Instead of "what ingredient fixes this?" — ask "what ingredient could do all of this?"
+
+That's the question SUMM is built on. Multifunctional ingredients aren't just a cleaner option. They're a smarter architecture.
+
+One ingredient with deep biology does what five specialized ones do — without the cumulative complexity.
+
+It's not a moralizing position. It's an engineering one.
+
+The food system doesn't need a villain. It needs better tools.
+
+FermiPro is one of them.`,
+    imageText:null, tags:["POV","Founder","Industry","UPF"],
+    analysis:"Bold opening earns attention. Takes a systemic view, not a moral one. Avoids finger-pointing while making a strong point. Very shareable.",
+    when:"When there's industry conversation about UPF or clean label. Positions SUMM as a thoughtful, non-preachy voice." }
+];
+
+const FORMULAS = [
+  { name:"The Contrast Hook", author:"Frederik, Kasper",
+    when:"When you have a genuine contrarian insight. Best for trend/industry posts.",
+    code:`[Surprising observation about food/industry]
+
+Most people assume [conventional belief].
+But [counter-evidence or personal experience].
+
+Here's why that matters for [specific application]:
+
+→ [Implication 1]
+→ [Implication 2]
+→ [Implication 3]
+
+[Bridge to FermiPro/SUMM — never the first mention]
+
+[Genuine question to invite engagement]` },
+  { name:"The Process Reveal", author:"Chuchu, Nabila",
+    when:"When explaining the science. Best from Chuchu or Nabila. Never sells — always teaches.",
+    code:`Most people think [process] works like [oversimplification].
+
+It doesn't. Here's what actually happens:
+
+Step 1: [Real description]
+Step 2: [What that creates]
+Step 3: [The emergent effect]
+
+The result is [concrete outcome].
+
+You cannot get this from [simpler alternative] because [specific reason].
+
+[1-2 sentences on why this matters commercially]
+
+Nerdy questions welcome 👇` },
+  { name:"The Sensory Story", author:"Nabila, Frederik",
+    when:"When you have real tasting data or sensory results. Creates credibility fast.",
+    code:`I gave [number] [type of people] two versions of [product].
+
+Version A: [standard formulation description]
+Version B: [FermiPro formulation description]
+
+Blind. No context. Just taste.
+
+Results:
+
+→ [Specific sensory finding with numbers]
+→ [Specific sensory finding with numbers]
+→ [Surprising or counterintuitive result]
+
+Here's what's happening [scientifically]:
+
+[1-2 sentence accessible explanation]
+
+The label for Version B?
+[Short clean label — the reveal]
+
+[Call to action: DM for sample / tasting]` },
+  { name:"The Data Drop", author:"Chuchu, Kasper",
+    when:"Monthly or when you have new test data. Speaks directly to R&D and procurement.",
+    code:`We ran [FermiPro] head-to-head against [conventional alternative].
+
+Same [conditions]. Same [application]. Different ingredient.
+
+Results ([methodology]):
+
+[Metric]: FermiPro [score] vs control [score] ✓
+[Metric]: FermiPro [score] vs control [score] ✓✓
+[Metric]: FermiPro [score] vs control [score] ✓✓✓
+
+[The most interesting finding explained in 2 sentences]
+
+[Practical implication for a specific team or problem]
+
+Raw data available on request.` },
+  { name:"The Honest Industry Take", author:"Frederik",
+    when:"When you have a genuine POV on industry direction. Not about us — about the industry.",
+    code:`Hot take: [bold framing of industry situation]
+
+Not because [obvious villain]. But because [structural explanation].
+
+[1-2 sentences on how the current situation developed]
+
+The answer isn't [obvious/wrong solution].
+The answer is [reframe the question].
+
+Instead of "[old question]" — ask "[new question]."
+
+That's [what we're doing / the direction we're headed].
+
+[1-line bridge to SUMM's approach — no sales pitch]
+
+[Question that invites real discussion]` }
+];
+
+const CALENDAR = [
+  { week:"W1", mon:{text:"Frederik: Origin story post",type:"maroon"}, tue:null,
+    wed:{text:"FermiPro application: Bouillon Creamer tasting",type:""}, thu:null,
+    fri:{text:"Kasper: Industry trend take (salt reduction regulation)",type:"dark"} },
+  { week:"W2", mon:null, tue:{text:"Chuchu: Cross-fermentation explainer (article)",type:"maroon"}, wed:null,
+    thu:{text:"Nabila: Before/after sensory test results",type:""},
+    fri:{text:"SUMM Co: FermiPro proof point — sodium reduction data",type:"dark"} },
+  { week:"W3", mon:{text:"Frederik: Counterintuitive industry POV",type:"maroon"}, tue:null,
+    wed:{text:"Application showcase: Snack Booster craveability",type:""},
+    thu:{text:"Chuchu: Technical Q&A on fermentation science",type:"maroon"}, fri:null },
+  { week:"W4", mon:null, tue:{text:"Kasper: Clean label regulation update + take",type:"dark"},
+    wed:{text:"Nabila: Kokumi — the flavor science most people miss",type:""},
+    thu:null, fri:{text:"SUMM Co: Month wrap + what's coming in product",type:"dark"} }
+];
+
+// ── COMPONENTS ───────────────────────────────────────────────────────────────
+
+function CopyBtn({ text }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button className={`copy-btn${copied?" copied":""}`} onClick={() => {
+      navigator.clipboard && navigator.clipboard.writeText(text);
+      setCopied(true); setTimeout(() => setCopied(false), 2000);
+    }}>{copied ? "✓ Copied" : "Copy Post"}</button>
+  );
+}
+
+function LiPost({ post }) {
+  const [exp, setExp] = useState(false);
+  const preview = post.text.slice(0, 220);
+  const hasMore = post.text.length > 220;
+  const display = exp ? post.text : (hasMore ? preview + "…" : post.text);
+  return (
+    <div className="li-post">
+      <div className="li-post-header">
+        <div className="li-avatar" style={{background:post.avatarBg}}>{post.avatarInit}</div>
+        <div>
+          <div className="li-name">{post.author}</div>
+          <div className="li-role">{post.role}</div>
+          <div className="li-time">Now · 🌐</div>
+        </div>
+      </div>
+      <div className="li-body">
+        {display}
+        {hasMore && <button className="see-more" onClick={() => setExp(!exp)}>{exp ? "…see less" : "…see more"}</button>}
+      </div>
+      {post.imageText && <div className="li-image">{post.imageText}</div>}
+      <div className="li-reactions">
+        {["👍 Like","💬 Comment","🔁 Repost","📤 Send"].map(r => <button key={r} className="li-react-btn">{r}</button>)}
+      </div>
+    </div>
+  );
+}
+
+function Accordion({ items }) {
+  const [open, setOpen] = useState(null);
+  return (
+    <div>
+      {items.map((item, i) => (
+        <div key={i} className="accordion-item">
+          <button className={`accordion-header${open===i?" open":""}`} onClick={() => setOpen(open===i?null:i)}>
+            <span className="accordion-title">{item.title}</span>
+            <span style={{color:"#B5922A",fontWeight:700,fontSize:18}}>{open===i?"−":"+"}</span>
+          </button>
+          {open===i && <div className="accordion-body">{item.content}</div>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── TABS ─────────────────────────────────────────────────────────────────────
+
+function PillarsTab() {
+  const [sel, setSel] = useState("science");
+  const p = PILLARS.find(x => x.id === sel);
+  const widths = {science:"30%",application:"65%",trends:"60%",team:"35%",proof:"35%"};
+  return (
+    <div>
+      <div className="section-header">
+        <div className="section-eyebrow">Content Strategy</div>
+        <h1 className="section-title">The Five Pillars</h1>
+        <p className="section-desc">Every piece of SUMM content maps to one of these pillars. Each one serves a different buyer stage and builds a different kind of trust.</p>
+      </div>
+      <div className="pill-group">
+        {PILLARS.map(x => <button key={x.id} className={`pill${sel===x.id?" active":""}`} onClick={() => setSel(x.id)}>{x.emoji} {x.label}</button>)}
+      </div>
+      <div className="grid-2" style={{gap:32,alignItems:"start"}}>
+        <div>
+          <div className="card" style={{borderLeft:`4px solid ${p.color}`,borderRadius:"0 4px 4px 0"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
+              <div>
+                <div style={{fontSize:34,marginBottom:8}}>{p.emoji}</div>
+                <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:24,fontWeight:900,color:"#5C1A1A",marginBottom:6}}>{p.title}</h2>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"#888",marginBottom:4}}>Cadence</div>
+                <span className="tag tag-gold">{p.frequency}</span>
+              </div>
+            </div>
+            <p style={{fontSize:14,color:"#2C1810",lineHeight:1.6,marginBottom:20,opacity:0.85}}>{p.desc}</p>
+            <div className="divider-gold" />
+            <div style={{marginBottom:16}}>
+              <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"#888",marginBottom:10}}>Best Formats</div>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{p.formats.map(f => <span key={f} className="tag tag-cream">{f}</span>)}</div>
+            </div>
+            <div style={{marginBottom:16}}>
+              <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"#888",marginBottom:10}}>Primary Authors</div>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{p.authors.map(a => <span key={a} className="persona-badge">👤 {a}</span>)}</div>
+            </div>
+            <div className="highlight"><strong>Why this pillar works:</strong> {p.why}</div>
+          </div>
+        </div>
+        <div>
+          <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"#888",marginBottom:16}}>Content Mix Across All Pillars</div>
+          {PILLARS.map(x => (
+            <div key={x.id} style={{marginBottom:12}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
+                <span style={{fontSize:13,fontWeight:600,color:x.id===sel?"#5C1A1A":"#2C1810"}}>{x.emoji} {x.label}</span>
+                <span style={{fontSize:11,color:"#888"}}>{x.frequency}</span>
+              </div>
+              <div style={{height:6,background:"rgba(181,146,42,0.1)",borderRadius:3,overflow:"hidden"}}>
+                <div style={{height:"100%",background:x.id===sel?"#5C1A1A":"rgba(181,146,42,0.4)",borderRadius:3,width:widths[x.id]}} />
+              </div>
+            </div>
+          ))}
+          <div className="divider" />
+          <div className="card card-maroon" style={{color:"#F5EDD8"}}>
+            <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",opacity:0.6,marginBottom:12}}>The Golden Rule</div>
+            <p style={{fontSize:14,lineHeight:1.65,fontStyle:"italic",fontFamily:"'Playfair Display',serif"}}>
+              "Every post should teach something, show something, or change how someone thinks. Never just announce. Never just promote. If it's not useful to the reader, it's not worth posting."
+            </p>
+            <div style={{marginTop:12,fontSize:12,opacity:0.6}}>— SUMM Content Principle</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PostsTab() {
+  const [filter, setFilter] = useState("all");
+  const filters = ["all","team","science","application","trends","proof"];
+  const filtered = filter==="all" ? POSTS : POSTS.filter(p => p.pillar===filter);
+  return (
+    <div>
+      <div className="section-header">
+        <div className="section-eyebrow">Ready-to-Use Content</div>
+        <h1 className="section-title">Post Examples</h1>
+        <p className="section-desc">Six fully-written LinkedIn posts across different pillars, authors, and objectives. Starting points — edit to match the moment.</p>
+      </div>
+      <div className="pill-group">
+        {filters.map(f => {
+          const pillar = PILLARS.find(p => p.id===f);
+          return <button key={f} className={`pill${filter===f?" active":""}`} onClick={() => setFilter(f)}>{f==="all"?"All Posts":pillar?.emoji+" "+f.charAt(0).toUpperCase()+f.slice(1)}</button>;
+        })}
+      </div>
+      {filtered.map(post => (
+        <div key={post.id} style={{marginBottom:48}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:16,flexWrap:"wrap",gap:12}}>
+            <div>
+              <div style={{display:"flex",gap:8,marginBottom:8,flexWrap:"wrap"}}>
+                <span className="tag tag-gold">{post.format}</span>
+                <span className="tag tag-cream">{post.hook}</span>
+                <span className="persona-badge">For: {post.persona}</span>
+              </div>
+              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                {post.tags.map(t => <span key={t} className="tag tag-outline">{t}</span>)}
+              </div>
+            </div>
+            <CopyBtn text={post.text} />
+          </div>
+          <div className="grid-2" style={{alignItems:"start"}}>
+            <LiPost post={post} />
+            <div>
+              <div className="card card-cream" style={{marginBottom:16}}>
+                <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"#8A6E1A",marginBottom:10}}>What Makes This Work</div>
+                <div style={{fontSize:13.5,color:"#2C1810",lineHeight:1.6}}>{post.analysis}</div>
+              </div>
+              <div className="card card-cream">
+                <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"#8A6E1A",marginBottom:10}}>When to Post This</div>
+                <div style={{fontSize:13.5,color:"#2C1810",lineHeight:1.6}}>{post.when}</div>
+              </div>
+            </div>
+          </div>
+          <div className="divider" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function FormulasTab() {
+  const [sel, setSel] = useState(0);
+  const f = FORMULAS[sel];
+  const hooks = [
+    {type:"Observation",ex:'"My daughter is 4. She eats everything."',why:"Human. Unexpected. Earns 2 more seconds."},
+    {type:"Misconception",ex:'"Most people think fermentation = adding a probiotic."',why:"Creates tension. The reader wants the correction."},
+    {type:"Bold Claim",ex:'"Hot take: the ingredient industry is partly responsible for the UPF problem."',why:"Polarizing enough to stop scrolling. Fair enough not to alienate."},
+    {type:"Data Tease",ex:'"I asked 12 food scientists to try two versions of the same sauce."',why:"Implicit promise of a reveal. Readers stay for the result."},
+  ];
+  return (
+    <div>
+      <div className="section-header">
+        <div className="section-eyebrow">Repeatable Frameworks</div>
+        <h1 className="section-title">Post Formulas</h1>
+        <p className="section-desc">Five reusable structures that match SUMM's voice. Pick the formula, fill in the specifics, and you have a post that works.</p>
+      </div>
+      <div className="grid-2" style={{alignItems:"start",gap:32}}>
+        <div>
+          {FORMULAS.map((formula, i) => (
+            <div key={i} className="accordion-item" style={{cursor:"pointer",marginBottom:8}} onClick={() => setSel(i)}>
+              <button className={`accordion-header${sel===i?" open":""}`}>
+                <span className="accordion-title">{sel===i?"▶ ":"○ "}{formula.name}</span>
+                <span className="persona-badge" style={{marginBottom:0}}>By: {formula.author}</span>
+              </button>
+              {sel===i && <div className="accordion-body" style={{fontSize:13,color:"#666",fontStyle:"italic"}}>{formula.when}</div>}
+            </div>
+          ))}
+          <div className="divider" />
+          <div className="card card-maroon">
+            <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(245,237,216,0.5)",marginBottom:14}}>Universal Rules</div>
+            {["Never open with 'I'. Open with a fact, observation, or bold claim.",
+              "Never mention FermiPro or SUMM in the first 3 paragraphs.",
+              "Always end with a question or a genuine invitation.",
+              "Max 3 hashtags: #CleanLabel #FoodInnovation #FermentedFood",
+              "Write shorter sentences than feels right. Then cut 20% more.",
+              "One emoji max. Use it at the end of a list, not the beginning of a sentence."
+            ].map((rule,i) => (
+              <div key={i} style={{display:"flex",gap:10,marginBottom:12}}>
+                <span style={{color:"#B5922A",fontWeight:700,flexShrink:0,marginTop:1}}>→</span>
+                <span style={{fontSize:13,color:"#F5EDD8",lineHeight:1.55,opacity:0.9}}>{rule}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"#888",marginBottom:12}}>{f.name} — Template</div>
+          <div className="formula" style={{marginBottom:16}}>
+            {f.code.split("\n").map((line,i) => (
+              <div key={i} style={{minHeight:line.trim()===""?8:"auto"}}>
+                {line.includes("[") ? <span className="formula-var">{line}</span> : <span>{line}</span>}
+              </div>
+            ))}
+          </div>
+          <div className="card card-cream" style={{marginBottom:24}}>
+            <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"#8A6E1A",marginBottom:8}}>Use When</div>
+            <div style={{fontSize:14,color:"#2C1810",lineHeight:1.6,marginBottom:12}}>{f.when}</div>
+            <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"#8A6E1A",marginBottom:8,marginTop:12}}>Best Author</div>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {f.author.split(", ").map(a => <span key={a} className="persona-badge">👤 {a}</span>)}
+            </div>
+          </div>
+          <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"#888",marginBottom:12}}>Anatomy of a Great SUMM Hook</div>
+          {hooks.map((h,i) => (
+            <div key={i} className="card" style={{marginBottom:10,padding:"14px 18px"}}>
+              <div style={{fontSize:10,fontWeight:700,color:"#B5922A",letterSpacing:1,marginBottom:5}}>{h.type.toUpperCase()}</div>
+              <div style={{fontSize:12.5,fontStyle:"italic",color:"#5C1A1A",marginBottom:5,lineHeight:1.4}}>{h.ex}</div>
+              <div style={{fontSize:12,color:"#666"}}>{h.why}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function VoiceTab() {
+  const dims = [
+    {label:"Technical",fill:75,vs:"not impenetrable"},
+    {label:"Confident",fill:85,vs:"not arrogant"},
+    {label:"Specific",fill:90,vs:"not vague"},
+    {label:"Warm",fill:65,vs:"not corporate"},
+    {label:"Playful",fill:45,vs:"not flippant"},
+    {label:"Edgy",fill:35,vs:"not safe"},
+  ];
+  const authors = [
+    {name:"Frederik",role:"CEO",voice:"Visionary, warm, slightly provocative. Comfortable with big claims if backed by honest logic. The storyteller.",topics:["Industry direction","Company origins","Counterintuitive POVs","Human stories"],dont:"Get too technical. Frederik's job is to inspire, not explain the chemistry.",tone:"Like a smart chef who reads the FT."},
+    {name:"Chuchu",role:"CTO",voice:"Precise, educational, genuinely nerdy in the best way. Explains complexity accessibly. The scientist.",topics:["Fermentation science","Technical data","Process reveals","Protein chemistry"],dont:"Be too cold or clinical. Chuchu's enthusiasm for the science should show.",tone:"Like a science communicator who could also win a Michelin star."},
+    {name:"Nabila",role:"Head of Flavor",voice:"Sensory-first, precise about taste, bridges science and experience beautifully. The flavor poet.",topics:["Sensory results","Taste science","Application showcases","Kokumi/umami education"],dont:"Be abstract. Nabila makes flavor tangible — use specific sensory language.",tone:"Like Harold McGee wrote copy for a Copenhagen restaurant."},
+    {name:"Kasper",role:"CCO",voice:"Commercial, credible, connects industry trends to practical implications. The translator.",topics:["Regulation","Industry trends","Procurement angles","Market data"],dont:"Get too academic. Kasper's value is making things commercially relevant.",tone:"Like a trusted advisor from the industry, not a salesperson."},
+  ];
+  return (
+    <div>
+      <div className="section-header">
+        <div className="section-eyebrow">Brand Voice</div>
+        <h1 className="section-title">How SUMM Sounds</h1>
+        <p className="section-desc">A precise guide to the SUMM voice — so every post, from every team member, sounds unmistakably like SUMM.</p>
+      </div>
+      <div className="grid-2" style={{gap:32,alignItems:"start"}}>
+        <div>
+          <div className="card" style={{marginBottom:24,padding:32}}>
+            <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"#B5922A",marginBottom:16}}>The One-Line Brief</div>
+            <blockquote style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontStyle:"italic",color:"#5C1A1A",lineHeight:1.5,borderLeft:"4px solid #B5922A",paddingLeft:20,margin:0}}>
+              "SUMM sounds like a brilliant food scientist who also grew up in a restaurant kitchen — precise, curious, confident, and never boring."
+            </blockquote>
+          </div>
+          <div className="card" style={{marginBottom:24}}>
+            <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"#888",marginBottom:18}}>Voice Calibration</div>
+            {dims.map(d => (
+              <div key={d.label} className="voice-bar">
+                <div className="voice-label">{d.label}</div>
+                <div className="voice-track"><div className="voice-fill" style={{width:d.fill+"%"}} /></div>
+                <div className="voice-vs">{d.vs}</div>
+              </div>
+            ))}
+          </div>
+          <div className="card card-maroon">
+            <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(245,237,216,0.5)",marginBottom:16}}>What SUMM Never Sounds Like</div>
+            {[["❌ Preachy","We don't lecture manufacturers about additives. They know. We solve."],
+              ["❌ Vague","No 'innovative solutions' or 'game-changing ingredients'. Be specific."],
+              ["❌ Sales-y","Never lead with product. Always lead with insight or proof."],
+              ["❌ Defensive","We don't position against competitors. We define a new category."],
+              ["❌ Corporate","No 'we are excited to announce'. Real people, real language."]
+            ].map(([type,rule]) => (
+              <div key={type} style={{display:"flex",gap:10,marginBottom:14}}>
+                <span style={{fontSize:13,color:"#F5EDD8",flexShrink:0,marginTop:1}}>{type}</span>
+                <span style={{fontSize:13,color:"#F5EDD8",opacity:0.75,lineHeight:1.5}}>{rule}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"#888",marginBottom:16}}>Voice by Author</div>
+          {authors.map(a => (
+            <div key={a.name} className="card" style={{marginBottom:16}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:10,flexWrap:"wrap",gap:8}}>
+                <div>
+                  <span style={{fontWeight:700,fontSize:15,color:"#5C1A1A"}}>{a.name}</span>
+                  <span style={{fontSize:12,color:"#888",marginLeft:8}}>{a.role}</span>
+                </div>
+                <span style={{fontSize:11,fontStyle:"italic",color:"#999"}}>"{a.tone}"</span>
+              </div>
+              <p style={{fontSize:13,color:"#2C1810",lineHeight:1.55,marginBottom:10}}>{a.voice}</p>
+              <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>{a.topics.map(t => <span key={t} className="tag tag-cream">{t}</span>)}</div>
+              <div style={{fontSize:12,color:"#888",borderTop:"1px solid rgba(181,146,42,0.15)",paddingTop:8,marginTop:4}}>
+                <strong style={{color:"#5C1A1A"}}>Avoid: </strong>{a.dont}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CalendarTab() {
+  const days = ["mon","tue","wed","thu","fri"];
+  const dayLabels = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
+  const stats = [
+    {label:"Volume Target",stat:"3–4",unit:"posts/week",detail:"Across all authors. Never more than 1/day from the same person.",color:"#B5922A"},
+    {label:"Personal vs Company",stat:"80/20",unit:"ratio",detail:"80% from personal profiles (Frederik, Chuchu, etc.). Company page amplifies and reposts.",color:"#5C1A1A"},
+    {label:"Best Posting Windows",stat:"Tue–Thu",unit:"7–9am or 12–1pm CET",detail:"Avoid Monday morning and Friday afternoon for long-form posts.",color:"#8A6E1A"},
+  ];
+  return (
+    <div>
+      <div className="section-header">
+        <div className="section-eyebrow">Planning Framework</div>
+        <h1 className="section-title">Monthly Content Rhythm</h1>
+        <p className="section-desc">A repeatable 4-week drumbeat. Approximately 3–4 posts/week across personal profiles and the company page.</p>
+      </div>
+      <div style={{overflowX:"auto",marginBottom:32}}>
+        <div style={{minWidth:660}}>
+          <div className="cal-grid" style={{marginBottom:1}}>
+            <div className="cal-day-header">WEEK</div>
+            {dayLabels.map(d => <div key={d} className="cal-day-header">{d}</div>)}
+          </div>
+          {CALENDAR.map((week,wi) => (
+            <div key={wi} className="cal-grid">
+              <div className="cal-week-label">{week.week}</div>
+              {days.map(day => (
+                <div key={day} className="cal-cell">
+                  {week[day]
+                    ? <div className={`cal-item${week[day].type?" "+week[day].type:""}`}>{week[day].text}</div>
+                    : <div className="cal-empty">—</div>}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{display:"flex",gap:16,marginBottom:32,flexWrap:"wrap"}}>
+        {[{label:"Human / Team Post",border:"#5C1A1A",bg:"rgba(92,26,26,0.06)"},
+          {label:"Application / Taste",border:"#B5922A",bg:"#F5EDD8"},
+          {label:"Industry Insight",border:"#8A6E1A",bg:"rgba(138,110,26,0.1)"}
+        ].map(l => (
+          <div key={l.label} style={{display:"flex",alignItems:"center",gap:8}}>
+            <div style={{width:16,height:16,background:l.bg,borderLeft:`3px solid ${l.border}`,borderRadius:"0 2px 2px 0"}} />
+            <span style={{fontSize:12,color:"#666"}}>{l.label}</span>
+          </div>
+        ))}
+      </div>
+      <div className="grid-3" style={{marginBottom:32}}>
+        {stats.map((s,i) => (
+          <div key={i} className="card stat-box" style={{borderTop:`3px solid ${s.color}`}}>
+            <div className="stat-num" style={{color:s.color}}>{s.stat}</div>
+            <div className="stat-label">{s.label}</div>
+            <div style={{fontSize:13,color:"#5C1A1A",fontWeight:600,marginBottom:6}}>{s.unit}</div>
+            <div style={{fontSize:12,color:"#666",lineHeight:1.55}}>{s.detail}</div>
+          </div>
+        ))}
+      </div>
+      <div className="grid-2" style={{gap:24}}>
+        <div className="card">
+          <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"#B5922A",marginBottom:16}}>Monthly Must-Haves</div>
+          {["1× founder origin / personal story post (Frederik)",
+            "2× application showcase with sensory detail (Nabila/Frederik)",
+            "1× technical deep-dive on fermentation science (Chuchu)",
+            "2× industry trend or regulation commentary (Kasper/Frederik)",
+            "1× proof point or data post (Chuchu/Kasper)",
+            "1× team culture / behind-the-scenes moment"
+          ].map((item,i) => (
+            <div key={i} style={{display:"flex",gap:10,marginBottom:10}}>
+              <span style={{color:"#B5922A",fontWeight:700}}>✓</span>
+              <span style={{fontSize:13,color:"#2C1810",lineHeight:1.45}}>{item}</span>
+            </div>
+          ))}
+        </div>
+        <div className="card">
+          <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"#5C1A1A",marginBottom:16}}>Reactive Triggers — Post When This Happens</div>
+          {["📰 EU regulation update on clean label or natural flavoring",
+            "📊 New research on salt reduction, plant protein, or fermentation",
+            "🏆 Award, milestone, or media mention",
+            "🔬 New tasting result or formulation breakthrough internally",
+            "🗣️ Conference you attended — share your one key takeaway",
+            "❓ Interesting question from a prospect or customer (anonymized)"
+          ].map((item,i) => (
+            <div key={i} style={{display:"flex",gap:10,marginBottom:10}}>
+              <span style={{fontSize:13,color:"#2C1810",lineHeight:1.45}}>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MetricsTab() {
+  const topStats = [
+    {label:"Follower Growth",target:"+15%/mo",when:"Months 1-6",color:"#B5922A"},
+    {label:"Engagement Rate",target:"3–6%",when:"Per post",color:"#5C1A1A"},
+    {label:"Profile Views",target:"↑ trend",when:"After each post",color:"#8A6E1A"},
+    {label:"Sample Requests",target:"1+/mo",when:"From LinkedIn",color:"#5C1A1A"},
+  ];
+  const accItems = [
+    {title:"Profile Visits from Target Companies",content:<div style={{fontSize:13.5,lineHeight:1.65}}>LinkedIn analytics shows who's viewing profiles. If the right companies (mid-large food manufacturers in savory/snacks/plant-based) are visiting after a post, that's a qualified signal. Check this within 48 hours of each post.</div>},
+    {title:"Comments from Decision-Makers",content:<div style={{fontSize:13.5,lineHeight:1.65}}>A comment from an R&D director or innovation lead is worth 100 likes. Respond within 2 hours. Always. This is relationship-building, not broadcast media.</div>},
+    {title:"DMs and Connection Requests",content:<div style={{fontSize:13.5,lineHeight:1.65}}>Track inbound DMs that reference a specific post. These are warm leads. Every month, count how many conversations started from LinkedIn vs. cold outreach. That ratio tells you if content is working.</div>},
+    {title:"Sample Kit Requests from LinkedIn",content:<div style={{fontSize:13.5,lineHeight:1.65}}>The ultimate B2B LinkedIn metric. Ask every sample requester: "How did you find us?" If even 1–2/month come from LinkedIn within 6 months, the content program is working.</div>},
+    {title:"Saves on Technical Posts",content:<div style={{fontSize:13.5,lineHeight:1.65}}>When someone saves a post, they're treating it as a resource. Track saves on the science and proof-point posts. High saves = content people trust enough to keep.</div>},
+  ];
+  return (
+    <div>
+      <div className="section-header">
+        <div className="section-eyebrow">Success Framework</div>
+        <h1 className="section-title">What Good Looks Like</h1>
+        <p className="section-desc">LinkedIn metrics for a B2B ingredient company. What to track, what actually matters, and what's a vanity trap.</p>
+      </div>
+      <div className="grid-4" style={{marginBottom:32}}>
+        {topStats.map((m,i) => (
+          <div key={i} className="card stat-box" style={{borderTop:`3px solid ${m.color}`}}>
+            <div className="stat-num" style={{color:m.color}}>{m.target}</div>
+            <div className="stat-label">{m.label}</div>
+            <div className="stat-sub">{m.when}</div>
+          </div>
+        ))}
+      </div>
+      <div className="grid-2" style={{gap:32}}>
+        <div>
+          <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"#888",marginBottom:16}}>The Metrics That Actually Matter (B2B)</div>
+          <Accordion items={accItems} />
+        </div>
+        <div>
+          <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"#888",marginBottom:16}}>What Not to Chase</div>
+          <div className="card card-cream" style={{marginBottom:16}}>
+            {[["Follower count","A scientist with 400 followers who comments on your post is more valuable than 4,000 follows from career coaches."],
+              ["Likes from peers","Likes from other food startups feel good. DMs from R&D directors change the business."],
+              ["Viral posts","A post with 50k impressions from general public does nothing for B2B sales. Targeted reach beats broad reach."],
+              ["Posting frequency","3 great posts/week beats 7 mediocre ones. Quality signals expertise. Volume signals desperation."]
+            ].map(([trap,why]) => (
+              <div key={trap} style={{marginBottom:16,paddingBottom:16,borderBottom:"1px solid rgba(181,146,42,0.2)"}}>
+                <div style={{display:"flex",gap:8,marginBottom:4}}>
+                  <span style={{color:"#5C1A1A",fontWeight:700}}>✗</span>
+                  <span style={{fontSize:13.5,fontWeight:700,color:"#5C1A1A"}}>{trap}</span>
+                </div>
+                <div style={{fontSize:13,color:"#666",paddingLeft:20,lineHeight:1.5}}>{why}</div>
+              </div>
+            ))}
+          </div>
+          <div className="card card-gold" style={{color:"#F5EDD8"}}>
+            <div style={{fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",opacity:0.7,marginBottom:12}}>6-Month Milestone Targets</div>
+            {["500+ followers across all 4 personal profiles",
+              "3+ inbound conversations from target companies per month",
+              "1 co-development inquiry traceable to LinkedIn",
+              "At least 2 posts with 1,000+ impressions from qualified audience",
+              "SUMM appearing in search results for 'fermented faba protein' and 'clean label umami'"
+            ].map((m,i) => (
+              <div key={i} style={{display:"flex",gap:10,marginBottom:10}}>
+                <span style={{color:"#F5EDD8",fontWeight:700,flexShrink:0}}>✓</span>
+                <span style={{fontSize:13,opacity:0.9,lineHeight:1.45}}>{m}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── APP ───────────────────────────────────────────────────────────────────────
+
+const TABS = [
+  {id:"pillars",label:"Content Pillars"},
+  {id:"posts",label:"Post Examples"},
+  {id:"formulas",label:"Post Formulas"},
+  {id:"voice",label:"Brand Voice"},
+  {id:"calendar",label:"Content Calendar"},
+  {id:"metrics",label:"What to Measure"},
+];
+
+function App() {
+  const [tab, setTab] = useState("pillars");
+  return (
+    <div className="app">
+      <div className="header">
+        <div className="header-brand">
+          <span className="header-summ">SUMM</span>
+          <span className="header-sub">ingredients</span>
+        </div>
+        <div className="header-title">LinkedIn Content Framework</div>
+      </div>
+      <div className="nav">
+        {TABS.map(t => (
+          <button key={t.id} className={`nav-tab${tab===t.id?" active":""}`} onClick={() => setTab(t.id)}>{t.label}</button>
+        ))}
+      </div>
+      <div className="main">
+        {tab==="pillars" && <PillarsTab />}
+        {tab==="posts" && <PostsTab />}
+        {tab==="formulas" && <FormulasTab />}
+        {tab==="voice" && <VoiceTab />}
+        {tab==="calendar" && <CalendarTab />}
+        {tab==="metrics" && <MetricsTab />}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
